@@ -546,6 +546,41 @@ QPixmap *Render::getCurrentDoubleMangaPage()
     }
 }
 
+
+int Render::getLongPageNextOffset()
+{
+    int lastWindow = buffer[currentPageBufferedIndex-2]->height() + buffer[currentPageBufferedIndex-1]->height() + buffer[currentPageBufferedIndex]->height();
+    int thisWindow = buffer[currentPageBufferedIndex-1]->height() + buffer[currentPageBufferedIndex]->height() + buffer[currentPageBufferedIndex+1]->height();
+    return buffer[currentPageBufferedIndex-2]->height() - std::max(lastWindow - thisWindow, 0);
+}
+
+int Render::getLongPagePrevOffset()
+{
+    return buffer[currentPageBufferedIndex-1]->height();
+}
+
+QPixmap *Render::getCurrentLongPage()
+{
+    QPoint pi(0, 0), pj(0,0), pk(0,0);
+    QSize si = buffer[currentPageBufferedIndex - 1]->size();
+    QSize sj = buffer[currentPageBufferedIndex]->size();
+    QSize sk = buffer[currentPageBufferedIndex + 1]->size();
+    int totalWidth, totalHeight;
+
+    totalWidth = qMax(si.rwidth(), qMax(sj.rwidth(), sk.rwidth()));
+    totalHeight = si.rheight() + sj.rheight() + sk.rheight();
+
+    pj.setY(si.rheight());
+    pk.setY(si.rheight() + sj.rheight());
+
+    auto page = new QPixmap(totalWidth, totalHeight);
+    QPainter painter(page);
+    painter.drawImage(QRect(pi, si), *buffer[currentPageBufferedIndex - 1]);
+    painter.drawImage(QRect(pj, sj), *buffer[currentPageBufferedIndex]);
+    painter.drawImage(QRect(pk, sk), *buffer[currentPageBufferedIndex + 1]);
+    return page;
+}
+
 bool Render::currentPageIsDoublePage()
 {
     if (currentIndex == 0 && Configuration::getConfiguration().getSettings()->value(COVER_IS_SP, true).toBool()) {
@@ -1021,6 +1056,14 @@ void Render::invalidate()
 void Render::doublePageSwitch()
 {
     doublePage = !doublePage;
+    if (comic) {
+        // invalidate();
+        update();
+    }
+}
+
+void Render::longStripSwitch()
+{
     if (comic) {
         // invalidate();
         update();

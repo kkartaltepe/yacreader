@@ -30,6 +30,7 @@ Viewer::Viewer(QWidget *parent)
       information(false),
       doublePage(false),
       doubleMangaPage(false),
+      longStrip(false),
       zoom(100),
       currentPage(nullptr),
       wheelStop(false),
@@ -308,7 +309,9 @@ void Viewer::goTo(unsigned int page)
 void Viewer::updatePage()
 {
     QPixmap *previousPage = currentPage;
-    if (doublePage) {
+    if (longStrip) {
+        currentPage = render->getCurrentLongPage();
+    } else if (doublePage) {
         if (!doubleMangaPage)
             currentPage = render->getCurrentDoublePage();
         else {
@@ -433,7 +436,13 @@ void Viewer::setZoomFactor(int z)
 
 void Viewer::updateVerticalScrollBar()
 {
-    if (direction > 0)
+    if (longStrip && direction > 0) {
+        verticalScrollBar()->setSliderPosition(verticalScrollBar()->sliderPosition() -  render->getLongPageNextOffset());
+    } else if (longStrip && direction < 0) {
+        int val = render->getLongPagePrevOffset();
+        printf("%d\n", val );
+        verticalScrollBar()->setSliderPosition(val);
+    } else if (direction > 0)
         verticalScrollBar()->setSliderPosition(verticalScrollBar()->minimum());
     else
         verticalScrollBar()->setSliderPosition(verticalScrollBar()->maximum());
@@ -891,6 +900,12 @@ void Viewer::doublePageSwitch()
     doublePage = !doublePage;
     render->doublePageSwitch();
     Configuration::getConfiguration().setDoublePage(doublePage);
+}
+
+void Viewer::longStripSwitch()
+{
+    longStrip = !longStrip;
+    render->longStripSwitch();
 }
 
 void Viewer::setMangaWithoutStoringSetting(bool manga)

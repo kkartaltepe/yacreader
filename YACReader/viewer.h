@@ -109,11 +109,13 @@ public slots:
     int getCurrentPageNumber();
     void updateZoomRatio(int ratio);
     bool getIsMangaMode();
+    void longStripSwitch();
 
 private:
     bool information;
     bool doublePage;
     bool doubleMangaPage;
+    bool longStrip;
 
     int zoom;
 

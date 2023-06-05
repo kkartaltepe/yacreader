@@ -71,6 +71,7 @@ MainWindowViewer::~MainWindowViewer()
     delete rightRotationAction;
     delete doublePageAction;
     delete doubleMangaPageAction;
+    delete longStripAction;
     delete increasePageZoomAction;
     delete decreasePageZoomAction;
     delete resetZoomAction;
@@ -377,6 +378,15 @@ void MainWindowViewer::createActions()
     connect(doubleMangaPageAction, &QAction::triggered, viewer, &Viewer::doubleMangaPageSwitch);
     connect(doubleMangaPageAction, &QAction::triggered, this, &MainWindowViewer::doubleMangaPageSwitch);
 
+    longStripAction = new QAction(tr("Long strip mode"), this);
+    longStripAction->setToolTip(tr("Switch to long strip mode"));
+    longStripAction->setIcon(QIcon(addExtensionToIconPath(":/images/viewer_toolbar/toHeight")));
+    longStripAction->setCheckable(true);
+    longStripAction->setChecked(false);
+    // longStripAction->setData(DOUBLE_PAGE_ACTION_Y);
+    // longStripAction->setShortcut(ShortcutsManager::getShortcutsManager().getShortcut(DOUBLE_PAGE_ACTION_Y));
+    connect(longStripAction, &QAction::triggered, viewer, &Viewer::longStripSwitch);
+
     goToPageAction = new QAction(tr("Go To"), this);
     goToPageAction->setIcon(QIcon(addExtensionToIconPath(":/images/viewer_toolbar/goto")));
     goToPageAction->setToolTip(tr("Go to page ..."));
@@ -548,6 +558,7 @@ void MainWindowViewer::createToolBars()
     comicToolBar->addAction(actionWithCustomIcon(QIcon(addExtensionToIconPathInToolbar(":/images/viewer_toolbar/rotateR")), rightRotationAction));
     comicToolBar->addAction(actionWithCustomIcon(QIcon(addExtensionToIconPathInToolbar(":/images/viewer_toolbar/doublePage")), doublePageAction));
     comicToolBar->addAction(actionWithCustomIcon(QIcon(addExtensionToIconPathInToolbar(":/images/viewer_toolbar/doubleMangaPage")), doubleMangaPageAction));
+    comicToolBar->addAction(actionWithCustomIcon(QIcon(addExtensionToIconPathInToolbar(":/images/viewer_toolbar/toHeight")), longStripAction)); // TODO real icon.
 
     comicToolBar->addSeparator();
 
@@ -596,6 +607,7 @@ void MainWindowViewer::createToolBars()
     viewer->addAction(rightRotationAction);
     viewer->addAction(doublePageAction);
     viewer->addAction(doubleMangaPageAction);
+    viewer->addAction(longStripAction);
     YACReader::addSperator(viewer);
 
     viewer->addAction(showMagnifyingGlassAction);
@@ -668,6 +680,7 @@ void MainWindowViewer::createToolBars()
     viewMenu->addSeparator();
     viewMenu->addAction(doublePageAction);
     viewMenu->addAction(doubleMangaPageAction);
+    viewMenu->addAction(longStripAction);
     viewMenu->addSeparator();
     viewMenu->addAction(showMagnifyingGlassAction);
 
@@ -1200,6 +1213,7 @@ void MainWindowViewer::setUpShortcutsManagement()
                                                  << rightRotationAction
                                                  << doublePageAction
                                                  << doubleMangaPageAction
+                                                 << longStripAction
                                                  << adjustToFullSizeAction
                                                  << fitToPageAction
                                                  << increasePageZoomAction
@@ -1478,6 +1492,7 @@ void MainWindowViewer::setActionsEnabled(bool enabled)
                            showMagnifyingGlassAction,
                            doublePageAction,
                            doubleMangaPageAction,
+                           longStripAction,
                            adjustToFullSizeAction,
                            fitToPageAction,
                            showZoomSliderlAction,

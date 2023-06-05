@@ -139,11 +139,15 @@ public slots:
     QPixmap *getCurrentPage();
     QPixmap *getCurrentDoublePage();
     QPixmap *getCurrentDoubleMangaPage();
+    QPixmap *getCurrentLongPage();
     bool currentPageIsDoublePage();
     bool nextPageIsDoublePage();
     bool previousPageIsDoublePage();
+    int getLongPageNextOffset();
+    int getLongPagePrevOffset();
     void goTo(int index);
     void doublePageSwitch();
+    void longStripSwitch();
     void setManga(bool manga);
     void doubleMangaPageSwitch();
     void setRotation(int degrees);
